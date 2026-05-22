@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_hms_patient_list" model="ir.ui.view">
+            <field name="name">hms.patient.list</field>
+            <field name="model">hms.patient</field>
+            <field name="arch" type="xml">
+                <list string="Patients">
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="blood_type"/>
+                    <field name="age"/>
+                    <field name="pcr"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_hms_patient_form" model="ir.ui.view">
+            <field name="name">hms.patient.form</field>
+            <field name="model">hms.patient</field>
+            <field name="arch" type="xml">
+                <form string="Patient Record">
+                    <sheet>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="first_name" placeholder="First Name"/> 
+                                <field name="last_name" placeholder="Last Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="birth_date"/>
+                                <field name="age"/>
+                                <field name="blood_type"/>
+                            </group>
+                            <group>
+                                <field name="cr_ratio"/>
+                                <field name="pcr"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Address Info" name="address_info">
+                                <field name="address" placeholder="Enter full address..."/>
+                            </page>
+                            <page string="Medical History" name="medical_history">
+                                <field name="history"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_hms_patient" model="ir.actions.act_window">
+            <field name="name">Patients</field>
+            <field name="res_model">hms.patient</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="menu_hms_root" name="HMS"/>
+        <menuitem id="menu_hms_patient_parent" name="Operations" parent="menu_hms_root"/>
+        <menuitem id="menu_hms_patient" name="Patients" parent="menu_hms_patient_parent" action="action_hms_patient"/>
+
+    </data>
+</odoo>

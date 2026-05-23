@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <record id="view_hms_patient_list" model="ir.ui.view">
             <field name="name">hms.patient.list</field>
             <field name="model">hms.patient</field>
@@ -9,9 +8,10 @@
                 <list string="Patients">
                     <field name="first_name"/>
                     <field name="last_name"/>
+                    <field name="department_id"/>
                     <field name="blood_type"/>
                     <field name="age"/>
-                    <field name="pcr"/>
+                    <field name="state"/>
                 </list>
             </field>
         </record>
@@ -21,6 +21,9 @@
             <field name="model">hms.patient</field>
             <field name="arch" type="xml">
                 <form string="Patient Record">
+                    <header>
+                        <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                    </header>
                     <sheet>
                         <field name="image" widget="image" class="oe_avatar"/>
                         <div class="oe_title">
@@ -30,22 +33,36 @@
                             </h1>
                         </div>
                         <group>
-                            <group>
+                            <group string="Basic Info">
                                 <field name="birth_date"/>
                                 <field name="age"/>
                                 <field name="blood_type"/>
                             </group>
-                            <group>
-                                <field name="cr_ratio"/>
+                            <group string="Medical &amp; Relations Mapping">
+                                <field name="department_id"/>
+                                <field name="department_capacity"/>
+                                <field name="doctor_ids" 
+                                       widget="many2many_tags" 
+                                       readonly="not department_id"/>
                                 <field name="pcr"/>
+                                <field name="cr_ratio" required="pcr"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Address Info" name="address_info">
                                 <field name="address" placeholder="Enter full address..."/>
                             </page>
-                            <page string="Medical History" name="medical_history">
+                            <page string="Medical History" name="medical_history" invisible="age &lt; 50">
                                 <field name="history"/>
+                            </page>
+                            <page string="State Change Logs" name="logs">
+                                <field name="log_ids" readonly="1">
+                                    <list>
+                                        <field name="create_uid" string="Changed By"/>
+                                        <field name="create_date" string="Date Triggered"/>
+                                        <field name="description" string="Event Detail"/>
+                                    </list>
+                                </field>
                             </page>
                         </notebook>
                     </sheet>
@@ -60,8 +77,10 @@
         </record>
 
         <menuitem id="menu_hms_root" name="HMS"/>
-        <menuitem id="menu_hms_patient_parent" name="Operations" parent="menu_hms_root"/>
-        <menuitem id="menu_hms_patient" name="Patients" parent="menu_hms_patient_parent" action="action_hms_patient"/>
-
+        <menuitem id="menu_hms_operations" name="Operations" parent="menu_hms_root"/>
+        
+        <menuitem id="menu_hms_patient" name="Patients" parent="menu_hms_operations" action="action_hms_patient"/>
+        <menuitem id="menu_hms_department" name="Departments" parent="menu_hms_operations" action="action_hms_department"/>
+        <menuitem id="menu_hms_doctor" name="Doctors" parent="menu_hms_operations" action="action_hms_doctor"/>
     </data>
 </odoo>

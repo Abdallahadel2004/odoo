@@ -37,6 +37,7 @@
                                 <field name="birth_date"/>
                                 <field name="age"/>
                                 <field name="blood_type"/>
+                                <field name="email"/>
                             </group>
                             <group string="Medical &amp; Relations Mapping">
                                 <field name="department_id"/>

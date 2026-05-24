@@ -1,4 +1,7 @@
 # pyrefly: ignore [missing-import]
+import re
+from datetime import date
+#pyrefly: ignore [missing-import]
 from odoo import models, fields, api, _
 #pyrefly: ignore [missing-import]
 from odoo.exceptions import ValidationError
@@ -19,8 +22,8 @@ class HMSPatient(models.Model):
     pcr = fields.Boolean(string='PCR Status')
     image = fields.Image(string='Patient Image')
     address = fields.Text(string='Address')
-    age = fields.Integer(string='Age')
-
+    email = fields.Char(string='Email')
+    age = fields.Integer(string='Age', compute='_compute_age', store=True)
 
     state = fields.Selection([
         ('undetermined', 'Undetermined'),
@@ -29,11 +32,32 @@ class HMSPatient(models.Model):
         ('serious', 'Serious')
     ], string='State', default='undetermined')
 
-
     department_id = fields.Many2one('hms.department', string='Department', domain=[('is_opened', '=', True)])
     doctor_ids = fields.Many2many('hms.doctor', string='Doctors')
     log_ids = fields.One2many('hms.patient.log', 'patient_id', string='Logs')
     department_capacity = fields.Integer(related='department_id.capacity', string='Department Capacity', readonly=True)
+
+    _email_unique = models.Constraint('UNIQUE(email)', 'The email address must be unique!')
+
+    @api.constrains('email')
+    def _check_email(self):
+        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        for record in self:
+            if record.email and not re.match(email_regex, record.email):
+                raise ValidationError(_("Please enter a valid email address (e.g., patient@example.com)."))
+
+    @api.depends('birth_date')
+    def _compute_age(self):
+        today = date.today()
+        for record in self:
+            if record.birth_date:
+                birth = fields.Date.to_date(record.birth_date)
+                if birth:
+                    record.age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
+                else:
+                    record.age = 0
+            else:
+                record.age = 0
 
 
     @api.onchange('age')

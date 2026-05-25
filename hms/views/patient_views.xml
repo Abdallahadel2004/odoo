@@ -44,7 +44,8 @@
                                 <field name="department_capacity"/>
                                 <field name="doctor_ids" 
                                        widget="many2many_tags" 
-                                       readonly="not department_id"/>
+                                       readonly="not department_id"
+                                       groups="hms.group_hms_manager"/>
                                 <field name="pcr"/>
                                 <field name="cr_ratio" required="pcr"/>
                             </group>
@@ -82,6 +83,6 @@
         
         <menuitem id="menu_hms_patient" name="Patients" parent="menu_hms_operations" action="action_hms_patient"/>
         <menuitem id="menu_hms_department" name="Departments" parent="menu_hms_operations" action="action_hms_department"/>
-        <menuitem id="menu_hms_doctor" name="Doctors" parent="menu_hms_operations" action="action_hms_doctor"/>
+        <menuitem id="menu_hms_doctor" name="Doctors" parent="menu_hms_operations" action="action_hms_doctor" groups="hms.group_hms_manager"/>
     </data>
 </odoo>

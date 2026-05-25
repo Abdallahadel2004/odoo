@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action to trigger the PDF report -->
+        <record id="action_report_patient_status" model="ir.actions.report">
+            <field name="name">Print Patient Status</field>
+            <field name="model">hms.patient</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">hms.report_patient_status</field>
+            <field name="report_file">hms.report_patient_status</field>
+            <field name="binding_model_id" ref="model_hms_patient"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="report_patient_status">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333;">
+                            <div style="border: 2px solid #0056b3; padding: 25px; border-radius: 8px; margin-top: 20px; overflow: hidden;">
+                                <div class="row align-items-center mb-4">
+                                    <div class="col-8">
+                                        <h1 style="color: #dc3545; font-weight: bold; font-size: 32px; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Patient Status Report</h1>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <t t-if="doc.image">
+                                            <img t-att-src="image_data_uri(doc.image)" style="max-height: 120px; max-width: 120px; border-radius: 4px; border: 2px solid #0056b3; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="width: 120px; height: 120px; border: 2px dashed #0056b3; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; background-color: #f8f9fa; color: #6c757d; font-size: 13px; font-weight: bold;">
+                                                No Photo
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <hr style="border-top: 2px solid #0056b3; margin-top: 10px; margin-bottom: 25px;"/>
+
+                                <div class="row" style="font-size: 15px; line-height: 1.8; margin-bottom: 30px;">
+                                    <div class="col-6">
+                                        <div class="mb-2"><strong>Name:</strong> <span t-out="'%s %s' % (doc.first_name or '', doc.last_name or '')"/></div>
+                                        <div class="mb-2"><strong>Age:</strong> <span t-field="doc.age"/></div>
+                                        <div class="mb-2"><strong>Department:</strong> <span t-field="doc.department_id.name"/></div>
+                                        <div class="mb-2"><strong>Doctors:</strong> <span t-out="', '.join(doc.doctor_ids.mapped(lambda d: '%s %s' % (d.first_name or '', d.last_name or ''))) or 'None'"/></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-2"><strong>Birth date:</strong> <span t-field="doc.birth_date" t-options='{"widget": "date"}'/></div>
+                                        <div class="mb-2"><strong>PCR:</strong> <span t-out="'Positive' if doc.pcr else 'Negative'"/></div>
+                                        <div class="mb-2"><strong>Blood Type:</strong> <span t-field="doc.blood_type"/></div>
+                                        <div class="mb-2"><strong>Email:</strong> <span t-field="doc.email"/></div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <h3 style="color: #dc3545; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-size: 20px; letter-spacing: 0.5px;">Log History</h3>
+                                    <table class="table table-bordered" style="font-size: 14px; border: 1px solid #dee2e6;">
+                                        <thead>
+                                            <tr style="background-color: #007bff; color: white;">
+                                                <th style="background-color: #007bff !important; color: white !important; padding: 10px; border: 1px solid #dee2e6;">User</th>
+                                                <th style="background-color: #007bff !important; color: white !important; padding: 10px; border: 1px solid #dee2e6;">Date</th>
+                                                <th style="background-color: #007bff !important; color: white !important; padding: 10px; border: 1px solid #dee2e6;">Info</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="doc.log_ids" t-as="log">
+                                                <tr>
+                                                    <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: 500;"><span t-field="log.create_uid.name"/></td>
+                                                    <td style="padding: 10px; border: 1px solid #dee2e6; color: #555;"><span t-field="log.create_date" t-options='{"widget": "datetime"}'/></td>
+                                                    <td style="padding: 10px; border: 1px solid #dee2e6; color: #333;"><span t-field="log.description"/></td>
+                                                </tr>
+                                            </t>
+                                            <t t-if="not doc.log_ids">
+                                                <tr>
+                                                    <td colspan="3" class="text-center text-muted" style="padding: 15px;">No logs recorded for this patient.</td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

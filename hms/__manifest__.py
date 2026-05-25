@@ -6,10 +6,13 @@
     'author': 'Abdallah',
     'depends': ['base','crm'],
     'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'views/department_views.xml',
         'views/doctor_views.xml',
         'views/patient_views.xml',
         'views/res_partner_views.xml',
+        'reports/patient_report.xml',
     ],
     'license': 'LGPL-3',
     'installable': True,
